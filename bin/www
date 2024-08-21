@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
 
+const db = require('../app/db/index')
 /**
  * Get port from environment and store in Express.
  */
@@ -25,9 +26,18 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+//mongodb
+db.on('error', (e) => {
+  console.log(`Error message: ${e}`)
+})
+
+db.on('open', () => {
+  console.log(`connect to db`)
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+})
+
 
 /**
  * Normalize a port into a number, string, or false.
