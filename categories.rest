@@ -2,22 +2,22 @@
 GET http://localhost:9000/api/v1/cms/categories
 
 ### get data by id
-GET http://localhost:9000/api/v1/cms/categories/66c5bbe943165f3fe06ca8de
+GET http://localhost:9000/api/v1/cms/categories/66c752256043a650116a4f4d
 
 ### create data
 POST http://localhost:9000/api/v1/cms/categories
 Content-Type: application/json
 
 {
-    "name":"kategori 2"
+    "name":"kasdasdwaa"
 }
 
 ### update
-PUT http://localhost:9000/api/v1/cms/categories/66c5bbe943165f3fe06ca8de
+PUT http://localhost:9000/api/v1/cms/categories/66c752256043a650116a4f4d
 Content-Type: application/json
 
 {
-    "name":"kategori123"
+    "name":"kategori 3"
 }
 
 ### delete
