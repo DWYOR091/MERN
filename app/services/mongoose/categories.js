@@ -10,7 +10,7 @@ const getAllCategories = async () => {
 const getCategoriesById = async (req) => {
     const { id } = req.params;
     const response = await Categories.findById(id);
-    if (!response) throw new NotFoundError(`Tidak ada kategori dengan id: ${id}`)
+    if (!response) throw new NotFoundError(`Tidak ada kategori dengan id : ${id}`)
 
     return response
 }
@@ -18,7 +18,7 @@ const getCategoriesById = async (req) => {
 const createCategories = async (req) => {
     const { name } = req.body;
     const check = await Categories.findOne({ name })
-    if (check) throw new BadRequestError(`Nama kategori sudah ada!`)
+    if (check) throw new BadRequestError()
     const response = await Categories.create({ name });
 
     return response
@@ -28,12 +28,12 @@ const updateCategories = async (req) => {
     const { id } = req.params
     const { name } = req.body
 
-    const check = await Categories.findOne({ name })
+    const check = await Categories.findOne({ name, _id: { $ne: id } })
     if (check) throw new BadRequestError(`Nama kategori sudah ada!`)
 
     const response = await Categories.findByIdAndUpdate(id,
         { name },
-        { new: true, runValidator: true })
+        { new: true, runValidators: true })
     if (!response) throw new NotFoundError(`Tidak ada kategori dengan id: ${id}`)
 
     return response
@@ -42,7 +42,7 @@ const updateCategories = async (req) => {
 const deleteCategories = async (req) => {
     const { id } = req.params
     const response = await Categories.findByIdAndDelete(id)
-    if (!response) throw new NotFoundError(`Tidak ada kategori dengan id: ${id}`)
+    if (!response) throw new NotFoundError(`Tidak ada kategori dengan id : ${id}`);
 
     return response
 }

@@ -2,7 +2,7 @@
 GET http://localhost:9000/api/v1/cms/categories
 
 ### get data by id
-GET http://localhost:9000/api/v1/cms/categories/66c752256043a650116a4f4d
+GET http://localhost:9000/api/v1/cms/categories/66c74cd86d5fb9a91f166cbb
 
 ### create data
 POST http://localhost:9000/api/v1/cms/categories
@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### update
-PUT http://localhost:9000/api/v1/cms/categories/66c752256043a650116a4f4d
+PUT http://localhost:9000/api/v1/cms/categories/66c74cd86d5fb9a91f166cbb
 Content-Type: application/json
 
 {
@@ -21,4 +21,4 @@ Content-Type: application/json
 }
 
 ### delete
-DELETE http://localhost:9000/api/v1/cms/categories/66c5bbe943165f3fe06ca8de
+DELETE http://localhost:9000/api/v1/cms/categories/66c74cd86d5fb9a91f166cbb

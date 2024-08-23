@@ -7,7 +7,8 @@ const cors = require("cors");
 const app = express();
 
 //router
-const categoryRoute = require("./app/api/v1/categories/router");
+const categoriesRoute = require("./app/api/v1/categories/router");
+const imagesRoute = require("./app/api/v1/images/router");
 
 //middlewares
 const handleErrorMiddleware = require("./app/middlewares/handler-error");
@@ -25,7 +26,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
   res.send("test");
 });
-app.use(v1, categoryRoute);
+
+app.use(v1, categoriesRoute);
+app.use(v1, imagesRoute);
 
 //middlewares
 app.use(handleErrorMiddleware);
