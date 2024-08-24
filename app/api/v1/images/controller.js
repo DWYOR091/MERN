@@ -1,4 +1,4 @@
-const { createImage } = require('../../../services/image')
+const { createImage } = require('../../../services/mongoose/image')
 const { StatusCodes } = require('http-status-codes')
 
 const create = async (req, res, next) => {

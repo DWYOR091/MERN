@@ -9,6 +9,7 @@ const app = express();
 //router
 const categoriesRoute = require("./app/api/v1/categories/router");
 const imagesRoute = require("./app/api/v1/images/router");
+const talentsRoute = require("./app/api/v1/talents/router");
 
 //middlewares
 const handleErrorMiddleware = require("./app/middlewares/handler-error");
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 
 app.use(v1, categoriesRoute);
 app.use(v1, imagesRoute);
+app.use(v1, talentsRoute);
 
 //middlewares
 app.use(handleErrorMiddleware);
