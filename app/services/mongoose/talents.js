@@ -5,7 +5,7 @@ const { checkingImage } = require('./image')
 const getAllTalents = async (req) => {
     const { keyword } = req.query
     let condition = {}
-    if (keyword) condition = { ...condition, name: { $regex: keyword, $option: 'i' } }
+    if (keyword) condition = { ...condition, name: { $regex: keyword, $options: 'i' } }
 
     const response = await Talents.find(condition).populate({
         path: "image",
@@ -63,4 +63,9 @@ const deleteTalent = async (req) => {
     return response
 }
 
-module.exports = { getAllTalents, getOneTalent, createTalent, updateTalent, deleteTalent }
+const checkingTalent = async (id) => {
+    const response = await Talents.findOne({ _id: id })
+    if (!response) throw new NotFoundError(`tidak ada talent dengan id: ${id}`)
+    return response
+}
+module.exports = { getAllTalents, getOneTalent, createTalent, updateTalent, deleteTalent, checkingTalent }
