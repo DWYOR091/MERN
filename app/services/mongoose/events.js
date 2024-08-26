@@ -1,108 +1,176 @@
-const { populate } = require("dotenv")
-const Events = require("../../api/v1/events/model")
-const { NotFoundError, BadRequestError } = require('../../errors')
-const { checkingImage } = require("./image")
-const { checkingCategory } = require("./categories")
-const { checkingTalent } = require("./talents")
+const { populate } = require("dotenv");
+const Events = require("../../api/v1/events/model");
+const { NotFoundError, BadRequestError } = require("../../errors");
+const { checkingImage } = require("./image");
+const { checkingCategory } = require("./categories");
+const { checkingTalent } = require("./talents");
 
 const getAllEvents = async (req) => {
-    const { keyword, category, talent } = req.query
+  const { keyword, category, talent } = req.query;
 
-    let condition = {}
-    if (keyword) {
-        condition = { ...condition, title: { $regex: keyword, $options: "i" } }
-    }
+  let condition = { organizer: req.user.organizer };
+  if (keyword) {
+    condition = { ...condition, title: { $regex: keyword, $options: "i" } };
+  }
 
-    if (category) {
-        condition = { ...condition, category: category }
-    }
+  if (category) {
+    condition = { ...condition, category: category };
+  }
 
-    if (talent) {
-        condition = { ...condition, talent: talent }
-    }
-    const response = await Events.find(condition)
-        .populate({
-            path: 'image',
-            select: '_id name'
-        })
-        .populate({
-            path: 'category',
-            select: '_id name'
-        })
-        .populate({
-            path: 'talent',
-            select: '_id name role image',
-            populate: { path: 'image', select: '_id name' }
-        })
+  if (talent) {
+    condition = { ...condition, talent: talent };
+  }
+  const response = await Events.find(condition)
+    .populate({
+      path: "image",
+      select: "_id name",
+    })
+    .populate({
+      path: "category",
+      select: "_id name",
+    })
+    .populate({
+      path: "talent",
+      select: "_id name role image",
+      populate: { path: "image", select: "_id name" },
+    });
 
-    return response
-}
+  return response;
+};
 
 const getOneEvent = async (req) => {
-    const { id } = req.params
-    const response = await Events.findById(id)
-        .populate({
-            path: 'image',
-            select: '_id name'
-        })
-        .populate({
-            path: 'category',
-            select: '_id name'
-        })
-        .populate({
-            path: 'talent',
-            select: '_id name role image',
-            populate: { path: 'image', select: '_id name' }
-        })
+  const { id } = req.params;
+  const response = await Events.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  })
+    .populate({
+      path: "image",
+      select: "_id name",
+    })
+    .populate({
+      path: "category",
+      select: "_id name",
+    })
+    .populate({
+      path: "talent",
+      select: "_id name role image",
+      populate: { path: "image", select: "_id name" },
+    });
 
-    if (!response) throw new NotFoundError(`Tidak ada event dengan id: ${id}`)
+  if (!response) throw new NotFoundError(`Tidak ada event dengan id: ${id}`);
 
-    return response
-}
+  return response;
+};
 
 const createEvent = async (req) => {
-    const { title, date, about, tagline, keyPoint, venueName, statusEvent, tickets, image, category, talent } = req.body
+  const {
+    title,
+    date,
+    about,
+    tagline,
+    keyPoint,
+    venueName,
+    statusEvent,
+    tickets,
+    image,
+    category,
+    talent,
+  } = req.body;
 
-    //cek
-    await checkingImage(image)
-    await checkingCategory(category)
-    await checkingTalent(talent)
+  //cek
+  await checkingImage(image);
+  await checkingCategory(category);
+  await checkingTalent(talent);
 
-    //cek title
-    const check = await Events.findOne({ title })
-    if (check) throw new BadRequestError(`title sudah ada, tidak boleh sama!`)
+  //cek title
+  const check = await Events.findOne({ title });
+  if (check) throw new BadRequestError(`title sudah ada, tidak boleh sama!`);
 
-    const response = await Events.create({ title, date, about, tagline, keyPoint, venueName, statusEvent, tickets, image, category, talent })
+  const response = await Events.create({
+    title,
+    date,
+    about,
+    tagline,
+    keyPoint,
+    venueName,
+    statusEvent,
+    tickets,
+    image,
+    category,
+    talent,
+    organizer: req.user.organizer,
+  });
 
-    return response
-}
+  return response;
+};
 
 const updateEvent = async (req) => {
-    const { title, date, about, tagline, keyPoint, venueName, statusEvent, tickets, image, category, talent } = req.body
-    const { id } = req.params
+  const {
+    title,
+    date,
+    about,
+    tagline,
+    keyPoint,
+    venueName,
+    statusEvent,
+    tickets,
+    image,
+    category,
+    talent,
+  } = req.body;
+  const { id } = req.params;
 
-    await checkingImage(image)
-    await checkingCategory(category)
-    await checkingTalent(talent)
+  await checkingImage(image);
+  await checkingCategory(category);
+  await checkingTalent(talent);
 
-    //cek title
-    const check = await Events.findOne({ title })
-    if (check) throw new BadRequestError(`title sudah ada, tidak boleh sama!`)
-    const response = await Events.findByIdAndUpdate(id, { title, date, about, tagline, keyPoint, venueName, statusEvent, tickets, image, category, talent }, { new: true, runValidators: true })
+  //cek title
+  const check = await Events.findOne({
+    title,
+    organizer: req.user.organizer,
+    _id: { $ne: id },
+  });
 
-    if (!response) throw new NotFoundError(`Tidak ada event dengan id: ${id}`)
+  if (check) throw new BadRequestError(`title sudah ada, tidak boleh sama!`);
+  const response = await Events.findByIdAndUpdate(
+    id,
+    {
+      title,
+      date,
+      about,
+      tagline,
+      keyPoint,
+      venueName,
+      statusEvent,
+      tickets,
+      image,
+      category,
+      talent,
+      organizer: req.user.organizer,
+    },
+    { new: true, runValidators: true }
+  );
 
-    return response
-}
+  if (!response) throw new NotFoundError(`Tidak ada event dengan id: ${id}`);
+
+  return response;
+};
 const deleteEvent = async (req) => {
-    const { id } = req.params
+  const { id } = req.params;
 
-    const response = await Events.findByIdAndDelete(id)
+  const response = await Events.findOneAndDelete({
+    _id: id,
+    organizer: req.user.organizer,
+  });
 
-    return response
-}
+  return response;
+};
 
-
-
-
-module.exports = { getAllEvents, getOneEvent, createEvent, updateEvent, deleteEvent }
+module.exports = {
+  getAllEvents,
+  getOneEvent,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+};
