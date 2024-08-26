@@ -7,6 +7,8 @@ const {
 } = require("../../../middlewares/auth");
 router.route("/organizers").post(createOrganizers);
 
-router.route("/users").post(authenticateUser, createUsers);
+router
+  .route("/users")
+  .post(authenticateUser, authorizeRoles("organizer"), createUsers);
 
 module.exports = router;
