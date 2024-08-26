@@ -10,7 +10,7 @@ const createJWT = ({ payload }) => {
 };
 
 const isTokenValid = ({ token }) => {
-  jwt.verify(token, JWT_SECRET);
+  return jwt.verify(token, JWT_SECRET);
 };
 
 module.exports = {

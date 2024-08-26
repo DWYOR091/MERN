@@ -1,15 +1,15 @@
-const { StatusCodes } = require('http-status-codes')
+const { StatusCodes } = require("http-status-codes");
 const {
   getAllCategories,
   getCategoriesById,
   createCategories,
   updateCategories,
-  deleteCategories
-} = require('../../../services/mongoose/categories')
+  deleteCategories,
+} = require("../../../services/mongoose/categories");
 
 const index = async (req, res, next) => {
   try {
-    const response = await getAllCategories();
+    const response = await getAllCategories(req);
     res.status(StatusCodes.OK).json(response);
   } catch (error) {
     next(error);
@@ -18,7 +18,7 @@ const index = async (req, res, next) => {
 
 const find = async (req, res, next) => {
   try {
-    const response = await getCategoriesById(req)
+    const response = await getCategoriesById(req);
     res.status(StatusCodes.OK).json(response);
   } catch (error) {
     next(error);
@@ -27,7 +27,7 @@ const find = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const response = await createCategories(req)
+    const response = await createCategories(req);
     res.status(StatusCodes.CREATED).json({
       msg: "Categories created",
       data: response,
@@ -39,7 +39,7 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const response = await updateCategories(req)
+    const response = await updateCategories(req);
     res.status(StatusCodes.OK).json({
       msg: "Categories updated",
       data: response,
@@ -55,7 +55,7 @@ const destroy = async (req, res, next) => {
     const response = await deleteCategories(req);
     res.status(StatusCodes.OK).json({
       msg: "Categories deleted",
-      data: response
+      data: response,
     });
   } catch (error) {
     next(error);
