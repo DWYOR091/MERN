@@ -3,7 +3,9 @@ const { BadRequestError, NotFoundError } = require("../../errors");
 
 const getAllCategories = async (req) => {
   const { organizer } = req.user;
-  const response = await Categories.find({ organizer }).populate({
+  const response = await Categories.find({
+    organizer,
+  }).populate({
     path: "organizer",
     select: "_id organizer",
   });
@@ -13,7 +15,10 @@ const getAllCategories = async (req) => {
 
 const getCategoriesById = async (req) => {
   const { id } = req.params;
-  const response = await Categories.findById(id);
+  const response = await Categories.findOne({
+    _id: id,
+    organizer: req.user.organizer,
+  });
   if (!response)
     throw new NotFoundError(`Tidak ada kategori dengan id : ${id}`);
 
@@ -23,7 +28,7 @@ const getCategoriesById = async (req) => {
 const createCategories = async (req) => {
   const { name } = req.body;
   const { organizer } = req.user;
-  const check = await Categories.findOne({ name });
+  const check = await Categories.findOne({ name, organizer });
   if (check) throw new BadRequestError(`name sudah ada!`);
   const response = await Categories.create({ name, organizer });
 
@@ -33,13 +38,17 @@ const createCategories = async (req) => {
 const updateCategories = async (req) => {
   const { id } = req.params;
   const { name } = req.body;
-
-  const check = await Categories.findOne({ name, _id: { $ne: id } });
+  const { organizer } = req.user;
+  const check = await Categories.findOne({
+    name,
+    organizer,
+    _id: { $ne: id },
+  });
   if (check) throw new BadRequestError(`Nama kategori sudah ada!`);
 
   const response = await Categories.findByIdAndUpdate(
     id,
-    { name },
+    { name, organizer },
     { new: true, runValidators: true }
   );
   if (!response) throw new NotFoundError(`Tidak ada kategori dengan id: ${id}`);
@@ -49,7 +58,11 @@ const updateCategories = async (req) => {
 
 const deleteCategories = async (req) => {
   const { id } = req.params;
-  const response = await Categories.findByIdAndDelete(id);
+  const { organizer } = req.user;
+  const response = await Categories.findOneAndDelete({
+    _id: id,
+    organizer,
+  });
   if (!response)
     throw new NotFoundError(`Tidak ada kategori dengan id : ${id}`);
 
