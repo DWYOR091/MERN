@@ -1,6 +1,7 @@
 const {
   createOrganizer,
   createUser,
+  getAllUsers,
 } = require("../../../services/mongoose/users");
 const { StatusCodes } = require("http-status-codes");
 
@@ -22,4 +23,13 @@ const createUsers = async (req, res, next) => {
   }
 };
 
-module.exports = { createUsers, createOrganizers };
+const getUsers = async (req, res, next) => {
+  try {
+    const response = await getAllUsers();
+    res.status(StatusCodes.OK).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createUsers, createOrganizers, getUsers };

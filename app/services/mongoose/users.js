@@ -42,4 +42,10 @@ const createUser = async (req) => {
   return user;
 };
 
-module.exports = { createOrganizer, createUser };
+const getAllUsers = async () => {
+  const response = Users.find().populate("organizer");
+
+  return response;
+};
+
+module.exports = { createOrganizer, createUser, getAllUsers };
