@@ -167,10 +167,30 @@ const deleteEvent = async (req) => {
   return response;
 };
 
+const changeStatusEvents = async (req) => {
+  const { id } = req.params
+  const { status } = req.body
+  const statusEvents = ['Draft', 'Published']
+
+  if (!statusEvents.includes(status)) {
+    throw new BadRequestError(`Status harus Draft atau Published`)
+  }
+
+  const check = await Events.findOne({ _id: id, organizer: req.user.organizer })
+
+  if (!check) throw new NotFoundError(`Tidak ada event dengan id: ${id}`)
+
+  check.statusEvent = status
+  await check.save()
+
+  return check
+}
+
 module.exports = {
   getAllEvents,
   getOneEvent,
   createEvent,
   updateEvent,
   deleteEvent,
+  changeStatusEvents
 };
