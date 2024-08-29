@@ -40,7 +40,7 @@ app.use(`${v1}/cms`, eventsRoute);
 app.use(`${v1}/cms`, organizersRoute);
 app.use(`${v1}/cms`, authRoute);
 app.use(`${v1}/cms`, ordersRoute);
-app.use(`${v1}/auth`, participantsRoute);
+app.use(`${v1}`, participantsRoute);
 
 //middlewares
 app.use(handleErrorMiddleware);

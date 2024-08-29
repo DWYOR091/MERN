@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const { model, Schema } = mongoose;
 
-const ticketCategoriesSchema = Schema({
+const ticketCategoriesSchema = new Schema({
   type: {
     type: String,
     required: [true, `Harus diisi`],
@@ -25,7 +25,7 @@ const ticketCategoriesSchema = Schema({
   },
 });
 
-const eventSchema = Schema(
+const eventSchema = new Schema(
   {
     title: {
       type: String,
