@@ -110,8 +110,9 @@ const getOneEvent = async (req) => {
 };
 
 const getAllOrders = async (req) => {
-  const { participantId } = req.participant;
-  const response = await Orders.findOne({ participant: participantId });
+  const { id } = req.participant;
+  console.log(id);
+  const response = await Orders.findOne({ participant: id });
   return response;
 };
 
@@ -121,4 +122,5 @@ module.exports = {
   signinParticipants,
   getAllEvents,
   getOneEvent,
+  getAllOrders,
 };
