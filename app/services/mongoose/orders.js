@@ -30,7 +30,7 @@ const getAllOrders = async (req) => {
     const response = await Orders.find(condition)
         .limit(limitNum)
         .skip(limitNum * (pagesNum - 1))
-        .exec(); // Jangan lupa .exec() untuk menjalankan query
+        .exec();
 
     // Hitung total dokumen sesuai kondisi pencarian
     const count = await Orders.countDocuments(condition);
