@@ -8,7 +8,7 @@ const {
   BadRequestError,
   UnauthorizedError,
 } = require("../../errors");
-const { otpMail } = require("../mail");
+const { otpMail, invoiceMail } = require("../mail");
 const { createJWT, createTokenParticipant } = require("../../utils");
 const { checkingEvent } = require("./events");
 
@@ -146,7 +146,6 @@ const checkoutOrder = async (req) => {
   // Simpan perubahan jika diperlukan
   await checkEvent.save();
 
-
   const historyEvent = {
     title: checkEvent.title,
     date: checkEvent.date,
@@ -170,6 +169,8 @@ const checkoutOrder = async (req) => {
     event,
     historyEvent
   })
+
+  await invoiceMail(personalDetail.email, response)
 
   return response
 }
