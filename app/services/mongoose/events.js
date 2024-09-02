@@ -186,11 +186,19 @@ const changeStatusEvents = async (req) => {
   return check
 }
 
+const checkingEvent = async (id) => {
+  const response = await Events.findOne({ _id: id })
+  if (!response) throw new NotFoundError(`Tidak ada event dengan id: ${id}`)
+
+  return response
+}
+
 module.exports = {
   getAllEvents,
   getOneEvent,
   createEvent,
   updateEvent,
   deleteEvent,
-  changeStatusEvents
+  changeStatusEvents,
+  checkingEvent
 };

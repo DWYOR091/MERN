@@ -15,6 +15,7 @@ const organizersRoute = require("./app/api/v1/organizers/router");
 const authRoute = require("./app/api/v1/auth/router");
 const ordersRoute = require("./app/api/v1/orders/router");
 const participantsRoute = require("./app/api/v1/participants/router");
+const paymentsRoute = require("./app/api/v1/payments/router");
 
 //middlewares
 const handleErrorMiddleware = require("./app/middlewares/handler-error");
@@ -40,6 +41,7 @@ app.use(`${v1}/cms`, eventsRoute);
 app.use(`${v1}/cms`, organizersRoute);
 app.use(`${v1}/cms`, authRoute);
 app.use(`${v1}/cms`, ordersRoute);
+app.use(`${v1}/cms`, paymentsRoute);
 app.use(`${v1}`, participantsRoute);
 
 //middlewares

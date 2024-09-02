@@ -11,7 +11,6 @@ const transporter = nodemailer.createTransport({
     pass: password,
   },
 });
-
 const otpMail = async (email, data) => {
   try {
     let template = fs.readFileSync("app/views/email/otp.html", "utf-8");
@@ -30,4 +29,21 @@ const otpMail = async (email, data) => {
   }
 };
 
-module.exports = { otpMail };
+const invoiceMail = async (email, data) => {
+  try {
+    let template = fs.readFileSync("app/views/email/invoice.html", "utf-8")
+
+    let msg = {
+      from: gmail,
+      to: email,
+      subject: "Invoice for Your Ticket Purchase",
+      html: mustache.render(template, data)
+    }
+    const send = await transporter.sendMail(msg)
+    return send
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+module.exports = { otpMail, invoiceMail };

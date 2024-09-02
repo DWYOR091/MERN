@@ -1,14 +1,16 @@
 const Participants = require("../../api/v1/participants/model");
 const Events = require("../../api/v1/events/model");
 const Orders = require("../../api/v1/orders/model");
+const Payments = require("../../api/v1/payments/model");
 
 const {
   NotFoundError,
   BadRequestError,
   UnauthorizedError,
 } = require("../../errors");
-const { otpMail } = require("../mail");
+const { otpMail, invoiceMail } = require("../mail");
 const { createJWT, createTokenParticipant } = require("../../utils");
+const { checkingEvent } = require("./events");
 
 const signupParticipants = async (req) => {
   const { firstName, lastName, email, password, role } = req.body;
@@ -116,6 +118,69 @@ const getAllOrders = async (req) => {
   return response;
 };
 
+const checkoutOrder = async (req) => {
+  const { event, personalDetail, payment, tickets } = req.body
+
+  const checkEvent = await checkingEvent(event)
+
+  const checkingPayment = await Payments.findOne({ _id: payment })
+  if (!checkingPayment) throw new NotFoundError(`Tidak ada payment dengan id: ${id}`)
+
+  let totalPayment = 0, totalOrderTicket = 0;
+
+  for (const tic of tickets) {
+    for (const ticket of checkEvent.tickets) {
+      if (tic.ticketCategories.type === ticket.type) {
+        if (tic.sumTicket > ticket.stock) {
+          throw new BadRequestError('Stock event tidak mencukupi');
+        } else {
+          ticket.stock -= tic.sumTicket;
+
+          totalOrderTicket += tic.sumTicket;
+          totalPayment += tic.ticketCategories.price * tic.sumTicket;
+        }
+      }
+    }
+  }
+
+  // Simpan perubahan jika diperlukan
+  await checkEvent.save();
+
+  const historyEvent = {
+    title: checkEvent.title,
+    date: checkEvent.date,
+    about: checkEvent.about,
+    tagline: checkEvent.tagline,
+    keyPoint: checkEvent.keyPoint,
+    venueName: checkEvent.venueName,
+    image: checkEvent.image,
+    category: checkEvent.category,
+    talent: checkEvent.talent,
+    organizer: checkEvent.organizer
+  }
+  const response = await Orders.create({
+    date: new Date(),
+    personalDetail,
+    totalPay: totalPayment,
+    totalOrderTicket,
+    orderItems: tickets,
+    participant: req.participant.id,
+    payment,
+    event,
+    historyEvent
+  })
+
+  await invoiceMail(personalDetail.email, response)
+
+  return response
+}
+
+const getAllPaymentsByOrganizer = async (req) => {
+  const { organizer } = req.params
+  const response = await Payments.find({ organizer })
+  return response
+}
+
 module.exports = {
   signupParticipants,
   activateParticipants,
@@ -123,4 +188,6 @@ module.exports = {
   getAllEvents,
   getOneEvent,
   getAllOrders,
+  checkoutOrder,
+  getAllPaymentsByOrganizer
 };

@@ -11,7 +11,7 @@ const ticketCategoriesSchema = new Schema({
     type: Number,
     default: 0,
   },
-  stok: {
+  stock: {
     type: Number,
     default: 0,
   },
